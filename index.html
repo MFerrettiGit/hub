@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Hub · M. Ferretti</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0d17;
+  --bg2:#11141f;
+  --card:#181c2a;
+  --card2:#1e2235;
+  --ink:#eceef6;
+  --muted:#8a91b4;
+  --line:#252a3d;
+  --azul:#4f56ff;
+  --azul2:#6b72ff;
+  --azul-glow:rgba(79,86,255,.25);
+  --verde:#34d36b;
+  --ouro:#f5b942;
+  --laranja:#ff6b35;
+  --vermelho:#ff4d6a;
+}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;line-height:1.5}
+a{color:inherit;text-decoration:none}
+
+/* ===== GATE ===== */
+#gate{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg)}
+#gate::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(79,86,255,.18) 0%,transparent 60%);pointer-events:none}
+#gate.hidden{display:none}
+
+.gate-card{background:var(--card);border:1px solid var(--line);border-radius:24px;padding:42px 36px;max-width:400px;width:100%;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 0 1px rgba(79,86,255,.1);text-align:center;position:relative;overflow:hidden}
+.gate-card::before{content:"";position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:200px;height:200px;background:radial-gradient(circle,rgba(79,86,255,.15),transparent 70%);pointer-events:none}
+.gate-card img{height:34px;margin-bottom:28px;filter:drop-shadow(0 0 12px rgba(79,86,255,.4))}
+.gate-card h2{font-family:'Plus Jakarta Sans';font-weight:800;font-size:1.4rem;color:var(--ink);margin-bottom:6px}
+.gate-card p{color:var(--muted);font-size:.9rem;margin-bottom:26px}
+.gate-input-wrap{position:relative}
+.gate-input-wrap svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+#gatePass{width:100%;padding:14px 16px 14px 42px;background:var(--bg2);border:2px solid var(--line);border-radius:14px;font-size:1rem;color:var(--ink);font-family:'DM Sans';letter-spacing:2px;text-align:center;outline:none;transition:border-color .2s}
+#gatePass:focus{border-color:var(--azul);box-shadow:0 0 0 4px var(--azul-glow)}
+#gatePass::placeholder{letter-spacing:0;color:var(--muted)}
+#gateBtn{margin-top:14px;width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--azul),#7c3aed);color:#fff;font-family:'Plus Jakarta Sans';font-weight:800;font-size:1rem;cursor:pointer;transition:opacity .2s,transform .1s;letter-spacing:.3px}
+#gateBtn:hover{opacity:.9;transform:translateY(-1px)}
+#gateBtn:active{transform:translateY(0)}
+#gateErr{color:var(--vermelho);font-size:.85rem;margin-top:12px;min-height:18px;font-weight:600}
+.gate-dots{display:flex;justify-content:center;gap:6px;margin-top:22px}
+.gate-dots span{width:6px;height:6px;border-radius:50%;background:var(--line)}
+.gate-dots span.on{background:var(--azul);box-shadow:0 0 8px var(--azul)}
+
+/* ===== HEADER ===== */
+header{background:linear-gradient(180deg,rgba(79,86,255,.12) 0%,transparent 100%);border-bottom:1px solid var(--line);padding:20px 0;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}
+.topbar{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{height:30px}
+.user-pill{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:7px 14px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:.82rem}
+.user-dot{width:8px;height:8px;border-radius:50%;background:var(--verde);box-shadow:0 0 6px var(--verde)}
+.sair-btn{background:none;border:none;color:var(--muted);font-size:.78rem;cursor:pointer;padding:6px 10px;border-radius:8px;font-family:'Plus Jakarta Sans';font-weight:600;transition:color .2s,background .2s}
+.sair-btn:hover{color:var(--vermelho);background:rgba(255,77,106,.08)}
+
+/* ===== HERO ===== */
+.hero{max-width:1200px;margin:0 auto;padding:52px 24px 32px}
+.hero-label{display:inline-flex;align-items:center;gap:6px;font-size:.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--azul2);background:rgba(79,86,255,.12);padding:5px 12px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-family:'Plus Jakarta Sans';font-weight:800;font-size:clamp(1.8rem,4vw,2.8rem);line-height:1.1}
+.hero h1 span{background:linear-gradient(90deg,var(--azul),#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero p{color:var(--muted);font-size:1rem;margin-top:10px;max-width:520px}
+
+/* ===== GRID DE CARDS ===== */
+.grid-wrap{max-width:1200px;margin:0 auto;padding:0 24px 60px}
+.section-title{font-family:'Plus Jakarta Sans';font-weight:700;font-size:.75rem;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:"";flex:1;height:1px;background:var(--line)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:40px}
+
+.scard{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;position:relative;overflow:hidden;text-decoration:none}
+.scard::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--azul),#7c3aed);opacity:0;transition:opacity .2s}
+.scard:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 0 1px rgba(79,86,255,.2);border-color:rgba(79,86,255,.3)}
+.scard:hover::before{opacity:1}
+.scard-icon{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;flex-shrink:0}
+.scard-body{flex:1}
+.scard-title{font-family:'Plus Jakarta Sans';font-weight:800;font-size:1.05rem;margin-bottom:5px}
+.scard-desc{color:var(--muted);font-size:.87rem;line-height:1.5}
+.scard-footer{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)}
+.scard-tag{font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.scard-open{display:flex;align-items:center;gap:4px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:.82rem;color:var(--azul2)}
+
+/* tags de cor por categoria */
+.tag-vendas{background:rgba(79,86,255,.12);color:var(--azul2)}
+.tag-produtos{background:rgba(52,211,107,.1);color:var(--verde)}
+.tag-gestao{background:rgba(245,185,66,.1);color:var(--ouro)}
+.tag-operacoes{background:rgba(255,107,53,.1);color:var(--laranja)}
+
+/* ícone colorido */
+.ic-vendas{background:rgba(79,86,255,.12)}
+.ic-produtos{background:rgba(52,211,107,.08)}
+.ic-gestao{background:rgba(245,185,66,.08)}
+.ic-operacoes{background:rgba(255,107,53,.08)}
+.ic-compras{background:rgba(168,85,247,.1)}
+.ic-rh{background:rgba(251,113,133,.1)}
+
+/* acesso restrito (oculto) */
+.scard.hidden{display:none}
+
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--line);padding:24px;text-align:center;color:var(--muted);font-size:.8rem}
+
+/* ===== ANIMAÇÃO ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.scard{animation:fadeUp .4s ease both}
+.scard:nth-child(1){animation-delay:.04s}
+.scard:nth-child(2){animation-delay:.08s}
+.scard:nth-child(3){animation-delay:.12s}
+.scard:nth-child(4){animation-delay:.16s}
+.scard:nth-child(5){animation-delay:.20s}
+.scard:nth-child(6){animation-delay:.24s}
+.scard:nth-child(7){animation-delay:.28s}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:600px){
+  .hero{padding:36px 16px 24px}
+  .grid-wrap{padding:0 16px 40px}
+  .topbar{padding:0 16px}
+  .gate-card{padding:32px 22px}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== GATE ===== -->
+<div id="gate">
+  <div class="gate-card">
+    <img src="logo-ferretti.png" alt="M. Ferretti">
+    <h2>Portal Ferretti</h2>
+    <p>Digite sua senha de acesso para entrar</p>
+    <div class="gate-input-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      <input id="gatePass" type="password" placeholder="senha" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <button id="gateBtn">Entrar</button>
+    <div id="gateErr"></div>
+    <div class="gate-dots">
+      <span></span><span></span><span class="on"></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HUB ===== -->
+<div id="hub" class="hidden" style="display:none">
+
+<header>
+  <div class="topbar">
+    <img src="logo-ferretti.png" alt="M. Ferretti" class="brand">
+    <div style="display:flex;align-items:center;gap:10px">
+      <div class="user-pill">
+        <span class="user-dot"></span>
+        <span id="userName">—</span>
+      </div>
+      <button class="sair-btn" id="sairBtn">Sair ×</button>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-label">
+    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    Portal de Aplicativos
+  </div>
+  <h1>Bem-vindo ao <span>Hub Ferretti</span></h1>
+  <p>Todos os sistemas da M. Ferretti em um só lugar. Clique em qualquer card para abrir.</p>
+</div>
+
+<div class="grid-wrap">
+
+  <div class="section-title">Vendas & Campanhas</div>
+  <div class="grid" id="gridVendas">
+
+    <a href="https://mferrettigit.github.io/campanhas/" target="_blank" class="scard" data-acesso="all">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-vendas">🏆</div>
+        <div class="scard-body">
+          <div class="scard-title">Campanhas de Vendas</div>
+          <div class="scard-desc">Ranking, faixas de premiação e mecânica de cada campanha ativa.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-vendas">Vendas</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+    <a href="https://mferrettigit.github.io/naocompra/" target="_blank" class="scard" data-acesso="all">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-vendas">🎯</div>
+        <div class="scard-body">
+          <div class="scard-title">Não Compra</div>
+          <div class="scard-desc">Oportunidades por setor: produtos que o cliente ainda não compra.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-vendas">Vendas</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+    <a href="https://mferrettigit.github.io/lancamentos/" target="_blank" class="scard" data-acesso="todos">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-vendas">🚀</div>
+        <div class="scard-body">
+          <div class="scard-title">Acompanhamento de Lançamentos</div>
+          <div class="scard-desc">Positivação dos SKUs de lançamento vs. meta de clientes.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-vendas">Vendas</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="section-title">Produtos & Cadastro</div>
+  <div class="grid">
+
+    <a href="https://mferrettigit.github.io/IMAGENS/" target="_blank" class="scard" data-acesso="all">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-produtos">🖼️</div>
+        <div class="scard-body">
+          <div class="scard-title">Banco de Imagens</div>
+          <div class="scard-desc">Catálogo visual de produtos com download de fotos e dados cadastrais.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-produtos">Produtos</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+    <a href="https://mferrettigit.github.io/cadastro/" target="_blank" class="scard" data-acesso="all">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-produtos">📋</div>
+        <div class="scard-body">
+          <div class="scard-title">Dados Cadastrais</div>
+          <div class="scard-desc">Fichas técnicas completas: EAN, DUN, NCM, dimensões e embalagens.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-produtos">Produtos</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="section-title">Gestão & Operações</div>
+  <div class="grid">
+
+    <a href="https://mferrettigit.github.io/indicadores/" target="_blank" class="scard" data-acesso="todos">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-gestao">📊</div>
+        <div class="scard-body">
+          <div class="scard-title">Indicadores da Equipe</div>
+          <div class="scard-desc">Visitas, pedidos e km dos vendedores externos em tempo real.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-gestao">Gestão</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+    <a href="https://mferrettigit.github.io/compras/" target="_blank" class="scard" data-acesso="fin">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="scard-icon ic-compras">🛒</div>
+        <div class="scard-body">
+          <div class="scard-title">Compras / Estoque</div>
+          <div class="scard-desc">Painel de decisão de compras: giro, ruptura e reposição por produto.</div>
+        </div>
+      </div>
+      <div class="scard-footer">
+        <span class="scard-tag tag-operacoes">Operações</span>
+        <span class="scard-open">Abrir <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+<footer>M. Ferretti Distribuidora · Portal Interno · Uso exclusivo da equipe</footer>
+
+</div>
+
+<script>
+/* ===== ACESSOS (hashes SHA-256 das senhas em minúsculas) ===== */
+const ACESSOS = [
+  {h:"15f54d41cbfe598bd87f5109489c4f435db816e9e5ea1d14f335aa742671786b", escopo:"todos", fin:true,  nome:"Gil"},
+  {h:"a4f55b36371b2ab32db9278b6d593df4157c2ea7b5b50c32a5eac40b94afe582", escopo:"todos", fin:true,  nome:"Guilherme"},
+  {h:"8f21a995f2b3c950e6ebb59612a0edb6b534a4ea41a1c602393a5417e0a25876", escopo:"todos", fin:true,  nome:"Marcio"},
+  {h:"6a88e91d86f376c4692a3f0cbb4d98fc910d89375bee43e569b450000e362327", escopo:"todos", fin:false, nome:"Paulo"},
+  {h:"f6cebde0a8a3a1cf6b24725a398e833c4493be02894e91c7fb658b1d5d0e315f", escopo:"todos", fin:false, nome:"Marcelo"},
+  {h:"4f8e6e70b40a293f8cb6c183b20adbca7769d9b423c6fb1f28716b24923be82d", escopo:"todos", fin:false, nome:"Marcelo"},
+  {h:"5e8603b463a25e63cc6789221b8a0fa98d9fcaf55c2a2b13739ee439eb61e808", escopo:"regional", valor:"NORDESTE", nome:"Regional Nordeste"},
+  {h:"d4a54a000a6ecff9b501ad659c1664a1a8866fb1a00a6af532c7512688f0db0e", escopo:"regional", valor:"SUL",      nome:"Regional Sul"},
+  {h:"8ab47043ad92392d258a36eaec504a05147d1b3a8ac55cca94009c0debf06426", escopo:"setor", valor:"Contas Chaves",   nome:"Contas Chaves"},
+  {h:"01909b4e129d72d9db19134cdedc4f73c5c6315e6b84553707e7ff94370d7bb9", escopo:"setor", valor:"Americana",       nome:"Americana"},
+  {h:"c6d8f738079870511501f4aa74c7b2f6bc3bbe262a035cf8956242692c0ef9b5", escopo:"setor", valor:"Atibaia",         nome:"Atibaia"},
+  {h:"5a7e7651a1bce6ec1f356f8874f063fc81b8c1fbf6e57fda545131172095fbd4", escopo:"setor", valor:"Atibaia",         nome:"Atibaia"},
+  {h:"ea5acf9a963a80b8ba33710b18e2cdbf2db4b2858987b82685363758ca48d6b8", escopo:"setor", valor:"Campinas Norte",  nome:"Campinas Norte"},
+  {h:"4c088950123b752060624127c337560aaebfe6be6fc11f01f67fae2acda9de40", escopo:"setor", valor:"Caraguatatuba",   nome:"Caraguatatuba"},
+  {h:"53b55f1377f1fa45810768196a01c492ac8bf6b2fd0b05706b1c8a1d6e01e6ba", escopo:"setor", valor:"Circuito",        nome:"Circuito"},
+  {h:"d98135ca1d750b3f6c8e054bf7c8715a3ca3c3322ebaef1ea144a43816b2152c", escopo:"setor", valor:"Franca",          nome:"Franca"},
+  {h:"d06a367d0e7166b6d56ba87061f08d6521f7ad5877c8526c01edde2d704e87af", escopo:"setor", valor:"Indaiatuba",      nome:"Indaiatuba"},
+  {h:"aa6a30d680926db949ed121bcf74d53eb68030ae1028fb6021ce18cf27fcc69c", escopo:"setor", valor:"Itapetininga",    nome:"Itapetininga"},
+  {h:"861198c33307530a47dc5d9ba0ee6eb2d9dd78e84af5f609d452ac6a6e7a2345", escopo:"setor", valor:"Jundiaí",         nome:"Jundiaí"},
+  {h:"a1cf8577996d9ff33591000ccf6eadde5e84db9d51dea8f8b1edbd773c60d98f", escopo:"setor", valor:"Ribeirão Preto",  nome:"Ribeirão Preto"},
+  {h:"b7f6fe70090f351bf045415bf09024106046f6a537b454d1c39cfefdeb95a323", escopo:"setor", valor:"Rio Claro",       nome:"Rio Claro"},
+  {h:"570e2beb91e359ecde788f49d8f9f8e48f144ceb9f6cc4044d682d952290a4f4", escopo:"setor", valor:"S.J. Boa Vista",  nome:"S.J. Boa Vista"},
+  {h:"69158fc95d6df989e0fa7edb6f3c64a05cc3ac438e7b9dea1e0382bbba7e3119", escopo:"setor", valor:"S.J. dos Campos", nome:"S.J. dos Campos"},
+  {h:"04635bde2d0aa9e1b0a5c84ed736678c1c9101bfd9f9d941db352c2e9e241b5f", escopo:"setor", valor:"São Carlos",      nome:"São Carlos"},
+  {h:"0efff8a041272fc596754a93c5c1dc39069bb78b0ed855918deeb8b1afaef64a", escopo:"setor", valor:"Setor Piracicaba", nome:"Piracicaba"},
+  {h:"496f31caf7df726ab7ad9d7c84f2abb371f04cef936ea5a2d042289562ee2284", escopo:"setor", valor:"Sorocaba",        nome:"Sorocaba"},
+];
+
+const LS_HUB = 'ferretti_hub_session';
+const LS_CAM = 'ferretti-campanha-acc'; // chave que as páginas de campanha usam
+
+/* ===== SHA-256 ===== */
+async function sha256(str){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+
+/* ===== GATE ===== */
+document.getElementById('gateBtn').onclick = tryAuth;
+document.getElementById('gatePass').addEventListener('keydown', e=>{ if(e.key==='Enter') tryAuth(); });
+document.getElementById('gatePass').focus();
+
+async function tryAuth(){
+  const pw = (document.getElementById('gatePass').value || '').trim().toLowerCase();
+  if(!pw) return;
+  const h = await sha256(pw);
+  const acc = ACESSOS.find(a => a.h === h);
+  if(!acc){
+    const el = document.getElementById('gateErr');
+    el.textContent = 'Senha inválida. Tente novamente.';
+    document.getElementById('gatePass').select();
+    return;
+  }
+  saveSession(h, acc);
+  showHub(acc);
+}
+
+function saveSession(h, acc){
+  try {
+    localStorage.setItem(LS_HUB, JSON.stringify({h, nome:acc.nome, escopo:acc.escopo, fin:!!acc.fin, ts:Date.now()}));
+    // salva o mesmo hash nas chaves que os outros sites usam para auto-login
+    localStorage.setItem(LS_CAM, h);
+  } catch(e){}
+}
+
+function clearSession(){
+  try {
+    localStorage.removeItem(LS_HUB);
+    localStorage.removeItem(LS_CAM);
+  } catch(e){}
+}
+
+/* ===== MOSTRAR HUB ===== */
+function showHub(acc){
+  document.getElementById('gate').classList.add('hidden');
+  document.getElementById('hub').style.display = '';
+  document.getElementById('userName').textContent = acc.nome;
+  filterCards(acc);
+}
+
+function filterCards(acc){
+  const isTodos   = acc.escopo === 'todos';
+  const isRegional= acc.escopo === 'regional';
+  const isFin     = !!acc.fin;
+
+  document.querySelectorAll('.scard[data-acesso]').forEach(card => {
+    const req = card.getAttribute('data-acesso');
+    let show = false;
+    if(req === 'all')   show = true;
+    if(req === 'todos') show = isTodos || isFin;
+    if(req === 'fin')   show = isFin;
+    if(req === 'regional') show = isTodos || isRegional || isFin;
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+/* ===== SAIR ===== */
+document.getElementById('sairBtn').addEventListener('click', ()=>{
+  clearSession();
+  document.getElementById('hub').style.display = 'none';
+  document.getElementById('gate').classList.remove('hidden');
+  document.getElementById('gatePass').value = '';
+  document.getElementById('gateErr').textContent = '';
+  document.getElementById('gatePass').focus();
+});
+
+/* ===== AUTO-LOGIN (sessão salva) ===== */
+(function autoLogin(){
+  try {
+    const raw = localStorage.getItem(LS_HUB);
+    if(!raw) return;
+    const ses = JSON.parse(raw);
+    // expira em 30 dias
+    if(!ses.h || Date.now() - (ses.ts||0) > 30*24*60*60*1000){ clearSession(); return; }
+    const acc = ACESSOS.find(a => a.h === ses.h);
+    if(!acc){ clearSession(); return; }
+    showHub(acc);
+  } catch(e){}
+})();
+</script>
+</body>
+</html>
