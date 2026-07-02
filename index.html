@@ -202,7 +202,7 @@ footer{border-top:1px solid var(--line);padding:24px;text-align:center;color:var
       </div>
     </a>
 
-    <a href="https://mferrettigit.github.io/lancamentos/" target="_blank" class="scard" data-acesso="todos">
+    <a href="https://mferrettigit.github.io/lancamentos/" target="_blank" class="scard" data-acesso="all">
       <div style="display:flex;align-items:center;gap:14px">
         <div class="scard-icon ic-vendas">🚀</div>
         <div class="scard-body">
@@ -342,6 +342,9 @@ function saveSession(h, acc){
     localStorage.setItem(LS_HUB, JSON.stringify({h, nome:acc.nome, escopo:acc.escopo, fin:!!acc.fin, ts:Date.now()}));
     // salva o mesmo hash nas chaves que os outros sites usam para auto-login
     localStorage.setItem(LS_CAM, h);
+    // lançamentos usa rel-acc com o objeto completo
+    const relAcc = {h, escopo:acc.escopo, valor:acc.valor||'', label:acc.nome, fin:!!acc.fin};
+    localStorage.setItem('rel-acc', JSON.stringify(relAcc));
   } catch(e){}
 }
 
@@ -349,6 +352,7 @@ function clearSession(){
   try {
     localStorage.removeItem(LS_HUB);
     localStorage.removeItem(LS_CAM);
+    localStorage.removeItem('rel-acc');
   } catch(e){}
 }
 
